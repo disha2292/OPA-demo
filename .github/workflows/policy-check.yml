@@ -22,7 +22,7 @@ jobs:
     - name: Evaluate Policies
       run: |
         opa run --server &
-        result=$(opa eval --data opa/policies/ --input examples/kubernetes.yaml 'data.kubernetes.allow')
+        result=$(opa eval --data opa/policies/ --input examples/service.yaml 'data.kubernetes.allow')
         if [[ "$result" == *"true"* ]]; then
           echo "Policy check passed."
         else
