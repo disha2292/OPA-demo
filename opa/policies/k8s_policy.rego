@@ -3,6 +3,8 @@ package kubernetes
 default allow = false
 
 allow {
-    input.kind == "Deployment"
-    input.spec.replicas != null
+    input.kind == "Service"
+    input.spec.type == "LoadBalancer"
+    count(input.spec.ports) > 0
+    input.spec.selector != null
 }
