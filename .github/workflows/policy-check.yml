@@ -1,0 +1,31 @@
+name: Policy Check
+
+on:
+  pull_request:
+    paths:
+      - 'examples/**'
+
+jobs:
+  policy-check:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install OPA
+      run: |
+        wget https://openpolicyagent.org/downloads/v0.41.0/opa_linux_amd64_static
+        chmod +x opa_linux_amd64_static
+        mv opa_linux_amd64_static opa
+
+    - name: Evaluate Policies
+      run: |
+        opa run --server &
+        result=$(opa eval --data opa/policies/ --input examples/kubernetes.yaml 'data.kubernetes.allow')
+        if [[ "$result" == *"true"* ]]; then
+          echo "Policy check passed."
+        else
+          echo "Policy check failed!"
+          exit 1
+        fi
